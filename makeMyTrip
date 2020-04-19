@@ -1,0 +1,84 @@
+package practicalCode;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+public class Day3MakeMyTrip {
+
+	public static void main(String[] args) throws InterruptedException {
+		
+			ChromeOptions options= new ChromeOptions();
+			options.addArguments("--disable-notifications");
+			System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+			ChromeDriver driver = new ChromeDriver(options);
+		
+//			1) Go to https://www.makemytrip.com/
+		    driver.get("https://www.makemytrip.com/");
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+			
+//			2) Click Hotels
+			driver.findElementByXPath("//span[text()='Hotels']").click();
+			
+//			3) Enter city as Goa, and choose Goa, India
+//			//div[@class='fsw_inputBox searchCity inactiveWidget activeWidget']
+			driver.findElementByXPath("//label[@for='city']").sendKeys("GOA");
+			driver.findElementByXPath("//p[text()='Goa, India']").click();
+			
+//			4) Enter Check in date as Next month 15th (May 15) and Check out as start date+5
+			driver.findElementByXPath("//input[@id='checkin']").click();
+			driver.findElementByXPath("(//div[text()='20'])[2]").click();
+			driver.findElementByXPath("//input[@id='checkout']").click();
+			driver.findElementByXPath("(//div[text()='25'])[2]").click();
+			
+//			5) Click on ROOMS & GUESTS and click 2 Adults and one Children(age 12). Click Apply Button.
+			driver.findElementByXPath("//input[@id='guest']").click();
+			driver.findElementByXPath("//li[@data-cy='adults-2']").click();
+			driver.findElementByXPath("//li[@data-cy='children-1']").click();
+			driver.findElementByXPath("//button[@data-cy='submitGuest']").click();
+			
+//			6) Click Search button
+			driver.findElementByXPath("//button[@data-cy='submit']").click();
+			driver.findElementByXPath("//body[@class='bodyFixed overlayWholeBlack']").click();
+			
+//			7) Select locality as Baga
+			driver.findElementByXPath("//label[text()='Baga']").click();
+			
+//			8) Select 5 start in Star Category under Select Filters
+			driver.findElementByXPath("//label[text()='5 Star']").click();
+			
+//			9) Click on the first resulting hotel and go to the new window
+			Set<String> windowHandles = driver.getWindowHandles();
+			List<String> handles = new ArrayList<String>(windowHandles);
+			driver.switchTo().window(handles.get(1));
+			driver.findElementByXPath("(//p[@itemprop='name']//span)[1]").click();
+			
+//			10) Print the Hotel Name 
+			String hotelName = driver.findElementByXPath("//h1[text()='The Park Baga River Goa']").getText();
+			System.out.println(hotelName);
+			
+//			11) Click MORE OPTIONS link and Select 3Months plan and close
+			driver.findElementByXPath("(//span[text()='MORE OPTIONS'])[1]").click();
+			driver.findElementByXPath("(//span[text()='SELECT'])[1]").click();
+			driver.findElementByClassName("close").click();
+			System.out.println("Print closed");
+			
+//			12) Click on BOOK THIS NOW
+			driver.findElementById("detpg_headerright_book_now").click();
+			Thread.sleep(2000);
+			
+//			13) Print the Total Payable amount
+			String total = driver.findElementById("revpg_total_payable_amt").getText().replaceAll("//D", "");
+			System.out.println("Total Payable amount" + total);
+			Thread.sleep(2000);
+			
+//			14) Close the browser
+			driver.quit();
+	}
+
+}
