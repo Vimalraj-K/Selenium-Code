@@ -1,0 +1,102 @@
+package practicalCode;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+public class Day6BigBasket {
+
+	public static void main(String[] args) throws InterruptedException {
+	
+			System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+			ChromeDriver driver = new ChromeDriver();
+	
+//			1) Go to https://www.bigbasket.com/
+		    driver.get("https://www.bigbasket.com/");
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+		
+//			2) mouse over on  Shop by Category 
+			Actions mouseOver= new Actions(driver);
+			mouseOver.moveToElement(driver.findElementByXPath("(//a[@data-toggle='dropdown'])[3]")).perform();
+			Thread.sleep(3000);
+			
+//			3)Go to FOODGRAINS, OIL & MASALA --> RICE & RICE PRODUCTS 
+			mouseOver.moveToElement(driver.findElementByXPath("(//a[@href='/cl/foodgrains-oil-masala/?nc=nb'])[2]")).perform();
+			
+//			4) Click on Boiled & Steam Rice
+			driver.findElementByXPath("(//a[@ng-href='/pc/foodgrains-oil-masala/rice-rice-products/?nc=nb'])[2]").click();
+			
+//			5) Choose the Brand as bb Royal
+			driver.findElementByXPath("(//span[text()='bb Royal'])[5]").click();
+			
+//			6) Go to Ponni Boiled Rice - Super Premium and select 5kg bag from Dropdown
+			mouseOver.moveToElement(driver.findElementByXPath("//a[@uib-tooltip='Idli Rice/Idli Arisi']")).perform();
+			Thread.sleep(3000);
+			driver.findElementByXPath("(//span[@ng-bind='vm.selectedProduct.sp'])[2]").click();
+			Thread.sleep(2000);
+			driver.findElementByXPath("(//span[text()='5 kg'])[5]").click();
+//			Select dropdown = new Select(driver.findElementByClassName("dropdown-menu drop-select"));
+//			dropdown.selectByIndex(1);
+
+//			7) print the price of Rice
+			String price = driver.findElementByXPath("(//span[@class='discnt-price'])[2]").getText().replaceAll("\\D", "");
+			System.out.println("the price of Rice ="+ price);
+			
+//			8) Click Add button
+			driver.findElementByXPath("(//button[contains(@class,'btn btn-add')])[2]").click();
+			driver.findElementByXPath("(//a[text()='Continue'])[1]").click();
+			
+//			9) Verify the success message displayed
+//			String success = driver.findElementByXPath("//div[text()='Successfully added Idli Rice/Idli Arisi 5 kg to the basket']").getText().replaceAll("\\D", "");
+//			String text ="Successfully added Idli Rice/Idli Arisi 5 kg to the basket";
+//			 if (success.equals(text)) {
+//			    	System.out.println("success message is verified");				
+//				}
+			
+//			10) Type Dal in Search field and enter
+			driver.findElementById("input").sendKeys("dal");
+			driver.findElementByXPath("//button[@type='submit']//i[1]").click();
+			 		
+//			12) Go to Toor/Arhar Dal and select 2kg & set Qty 2 
+			mouseOver.moveToElement(driver.findElementByLinkText("Toor/Arhar Dal/Thuvaram Paruppu")).perform();
+			Thread.sleep(3000);
+			driver.findElementByXPath("(//span[@data-bind='label'])[3]").click();
+			Thread.sleep(2000);
+			driver.findElementByXPath("(//span[text()='2 kg'])[2]").click();
+			driver.findElementByXPath("(//div[@qa='qty']//input)[3]").clear();
+			driver.findElementByXPath("(//div[@qa='qty']//input)[3]").sendKeys("2");
+			
+//			13) Print the price of Dal
+			String price1 = driver.findElementByXPath("(//span[@class='discnt-price'])[3]").getText().replaceAll("\\D", "");
+			System.out.println("the price of Dal ="+ price1);
+			
+//			14) Click Add button
+			driver.findElementByXPath("(//button[contains(@class,'btn btn-add')])[3]").click();
+//			driver.findElementByXPath("(//a[text()='Continue'])[1]").click();
+			Thread.sleep(8000);
+			
+//			15) Mouse hover on My Basket
+			mouseOver.moveToElement(driver.findElementByXPath("//a[@qa='myBasket']")).perform();
+//			Thread.sleep(2000);
+			
+//			16) Validate the Sub Total displayed for the selected items
+			String total = driver.findElementByXPath("//span[@qa='subTotalMB']").getText();
+			Thread.sleep(2000);
+			System.out.println("Total =" + total);
+			
+//			17) Reduce the Quantity of Dal as 1
+			driver.findElementByXPath("(//button[@qa='decQtyMB'])[2]").click();
+			
+//			18) Validate the Sub Total for the current items
+			String total1 = driver.findElementByXPath("//div[@ng-if='vm.cart.cart_total > 0']//p[1]").getText();
+			Thread.sleep(2000);
+			System.out.println("Total =" + total1);
+			
+//			19) Close the Browser
+			driver.quit();
+
+	}
+}
+
