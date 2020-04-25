@@ -1,1 +1,118 @@
 
+package practicalCode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.Select;
+
+public class Day7Honda {
+
+	public static void main(String[] args) throws InterruptedException {
+		
+
+			System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+			ChromeDriver driver = new ChromeDriver();
+		
+//		    1) Go to https://www.honda2wheelersindia.com/
+			driver.get("https://www.honda2wheelersindia.com/");
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+		
+//			2) Click on scooters and click dio
+			driver.findElementByClassName("close").click();
+			driver.findElementById("link_Scooter").click();
+			Thread.sleep(2000);
+			driver.findElementByXPath("//img[@src='/assets/images/thumb/dioBS6-icon.png']").click();
+			driver.findElementByLinkText("Specifications").click();
+			
+//			3) Click on Specifications and mouseover on ENGINE			
+			Actions mouseOver= new Actions(driver);
+			mouseOver.moveToElement(driver.findElementByLinkText("ENGINE")).perform();
+			
+//			4) Get Displacement value
+			float text = Float.parseFloat(driver.findElementByXPath("//span[text()='109.51cc']").getText().replaceAll("c", ""));
+			System.out.println("Dio Displacement Value= " +text);
+			
+//			5) Go to Scooters and click Activa 125
+			driver.findElementById("link_Scooter").click();
+			driver.findElementByXPath("//img[@src='/assets/images/thumb/activa-125new-icon.png']").click();
+			
+//			6) Click on Specifications and mouseover on ENGINE
+			driver.findElementByLinkText("Specifications").click();
+			mouseOver.moveToElement(driver.findElementByLinkText("ENGINE")).perform();
+			
+//			7) Get Displacement value
+			float text1 = Float.parseFloat(driver.findElementByXPath("//span[text()='124 cc']").getText().replaceAll("c", ""));
+			System.out.println("Activa 125 Displacement Value= " +text1);
+			
+//			8) Compare Displacement of Dio and Activa 125 and print the Scooter name having better Displacement.
+			if (text>text1) {
+				System.out.println("\"Honda Dio 109.51cc has better displacement\"");
+				
+			} else {
+				System.out.println("Honda Activa 125cc has better displacement");
+			}
+	
+//			9) Click FAQ from Menu 
+			driver.findElementByXPath("(//a[@href='/FAQ'])[1]").click();
+			
+//			10) Click Activa 125 BS-VI under Browse By Product
+			driver.findElementByLinkText("Activa 125 BS-VI").click();			
+			
+//			11) Click  Vehicle Price 
+			driver.findElementByXPath("//a[@href='#6a']").click();
+			
+//			12) Make sure Activa 125 BS-VI selected and click submit
+			String text3 = driver.findElementById("ModelID6").getText();
+			System.out.println("Selected Value is "+text3) ;
+			driver.findElementById("submit6").click();
+			
+//			13) click the price link
+			driver.findElementByXPath("//table[@id='tblPriceMasterFilters']//a").click();
+			
+//			14)  Go to the new Window and select the state as Tamil Nadu and  city as Chennai
+			Set<String> windowHandles = driver.getWindowHandles();
+			List<String> handles = new ArrayList<String>(windowHandles);
+			driver.switchTo().window(handles.get(1));
+			
+			WebElement stateElement = driver.findElementById("StateID");
+			Select stateDropdown = new Select(stateElement);
+			stateDropdown.selectByVisibleText("Tamil Nadu");
+			
+			WebElement cityElement = driver.findElementById("CityID");
+			Select cityDropdown = new Select(cityElement);
+			cityDropdown.selectByVisibleText("Chennai");
+	
+//			15) Click Search
+			driver.findElementByXPath("//button[text()='Search']").click();
+			
+//			16) Print all the 3 models and their prices
+			WebElement priceTable = driver.findElementById("gvshow");
+			List<WebElement> rows = priceTable.findElements(By.tagName("tr"));
+			List<WebElement> name = priceTable.findElements(By.xpath("//td[contains(text(),'ACTIVA')]"));
+			List<WebElement> price = priceTable.findElements(By.xpath("//td[contains(text(),'Rs')]"));
+			
+			Map<String, String> priceMap = new HashMap<String, String>();
+			for(int i=0; i<=rows.size();i++) {
+				priceMap.put(name.get(i).getText(), price.get(i).getText());
+			}
+			
+			for (Map.Entry<String, String> entry : priceMap.entrySet()) {
+				System.out.println(entry.getKey()+" = "+entry.getValue());
+			}
+			
+//			17) Close the Browser
+			driver.quit();
+
+	}
+
+}
