@@ -1,0 +1,114 @@
+package practicalCode;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class Day8PepperFry {
+
+	public static void main(String[] args) throws InterruptedException, IOException {
+			
+			System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+			ChromeDriver driver = new ChromeDriver();
+			
+//			1) Go to https://www.pepperfry.com/
+			driver.get("https://www.pepperfry.com/");
+			driver.manage().window().maximize();
+			driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+		
+//			2) Mouseover on Furniture and click Office Chairs under Chairs
+			Actions mouseOver= new Actions(driver);
+			mouseOver.moveToElement(driver.findElementByXPath("(//a[text()='Furniture'])[1]")).perform();
+			driver.findElementByLinkText("Office Chairs").click();
+			
+//			3) click Executive Chairs
+			driver.findElementByXPath("(//div[@class='cat-wrap-img'])[2]").click();
+			@SuppressWarnings("deprecation")
+			WebDriverWait wait = new WebDriverWait(driver, 20);
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//a[@class='popup-close'])[4]"))).click(); 
+			
+//			4) Change the minimum Height as 50 in under Dimensions
+			driver.findElementByXPath("(//input[@class='clipFilterDimensionHeightValue'])[1]").clear();
+			driver.findElementByXPath("(//input[@class='clipFilterDimensionHeightValue'])[1]").sendKeys("50", Keys.ENTER);			
+		
+//			5) Add "Poise Executive Chair in Black Colour" chair to Wishlist
+			driver.findElementByXPath("//div[@id='p_2_1_1499699']//a[@id='clip_wishlist_']").click();
+		
+//			6) Mouseover on Homeware and Click Pressure Cookers under Cookware
+			mouseOver.moveToElement(driver.findElementByLinkText("Homeware")).perform();
+			driver.findElementByLinkText("Pressure Cookers").click();
+		
+//			7) Select Prestige as Brand
+			driver.findElementByXPath("//label[@for='brandsnamePrestige']").click();
+			Thread.sleep(2000);
+		
+//			8) Select Capacity as 1-3 Ltr
+			driver.findElementByXPath("//label[contains(text(),'1 Ltr - 3 Ltr')]").click();
+		
+//			9) Add "Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr" to Wishlist
+			Thread.sleep(2000);
+			driver.findElementByXPath("//a[@data-productname='Nakshatra Cute Metallic Red Aluminium Cooker 2 Ltr']").click();
+		
+//			10) Verify the number of items in Wishlist
+			Thread.sleep(3000);
+			String count = driver.findElementByXPath("(//span[@class='count_alert'])[2]").getText().replaceAll("\\D", "");
+			System.out.println("Total Whishlist item"+count);
+		
+//			11) Navigate to Wishlist
+			driver.findElementByXPath("//a[@data-tooltip='Wishlist']").click();
+		
+//			12) Move Pressure Cooker only to Cart from Wishlist
+			driver.findElementByXPath("(//a[@data-tab='mywishlist'])[2]").click();
+		
+//			13) Check for the availability for Pincode 600128
+			driver.findElementByClassName("srvc_pin_text").sendKeys("600073");
+			driver.findElementByLinkText("Check").click();
+			
+//			14) Click Proceed to Pay Securely
+			Thread.sleep(3000);
+			driver.findElementByXPath("//div[@class='minicart_footer']").click();
+		
+//			15) Capture the screenshot of the item under Order Item
+//			Step-1: Locate the specific element that has to be captured
+			WebElement imageElement = driver.findElementByXPath("//div[@class='ck-pro-img-wrap']//img");
+			
+//			Step-2: Get location of image, its width and height
+			Point imageLocation = imageElement.getLocation();
+			int width = imageElement.getSize().getWidth();
+			int height = imageElement.getSize().getHeight();
+			
+//			Step-3: Take full screenshot
+			File screenshot = driver.getScreenshotAs(OutputType.FILE);
+			BufferedImage fullImage = ImageIO.read(screenshot);
+			
+//			Step-4: Crop the section starting at the fetched location coordinates(X,Y) for the specified width and height
+			BufferedImage subimage = fullImage.getSubimage(imageLocation.getX(), imageLocation.getY(), width, height);
+			
+//			Step-5: Write the cropped image to a file
+			ImageIO.write(subimage, "png", screenshot);
+			
+//			Step-6: Create a destination path and copy file to destination
+			File dest = new File("./screenshots/cooker.png");
+			FileUtils.copyFile(screenshot, dest);
+			System.out.println("Screenshot Captured");
+		
+//			16) Close the browser
+			driver.quit();
+
+	}
+
+}
